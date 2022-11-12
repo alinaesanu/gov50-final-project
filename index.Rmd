@@ -1,8 +1,11 @@
 ---
 title: "The Effects of Career Politicians on Political Stability and Government Effectiveness"
 author: "Alina Esanu"
-description: "Correlation between career politicians and political stability and government effectiveness"
-output: pdf_document
+description: Correlation between career politicians and political stability and government
+  effectiveness
+output:
+  html_document:
+    df_print: paged
 ---
 
 
@@ -14,3 +17,20 @@ I am interested in exploring data related to career politicians and two politica
 Government Effectiveness captures perceptions of the quality of public services, the quality of the civil service and the degree of its independence from political pressures, the quality of policy formulation and implementation, and the credibility of the government's commitment to such policies. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
 
 Political Stability and Absence of Violence/Terrorism measures perceptions of the likelihood of political instability and/or politically-motivated violence, including terrorism. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
+
+
+```{r}
+library(tidyverse)
+eff_stabil <- read_csv("gov_effectiveness_and_pol_stability.csv")
+glimpse(eff_stabil)
+spec(eff_stabil)
+
+eff_stabil1 <- eff_stabil |>
+  select(`Country Name`,`Series Name`,`2012 [YR2012]`) 
+eff_stabil1
+```
+
+I tried using pivot_wider, but it didn't work because the variables are characters instead of factors. I need help figuring out how to turn characters into factors.
+
+pivot_wider(names_from = `Series Name`,
+              values_from = `2012 [YR2012]`)
