@@ -1,12 +1,17 @@
 ---
-title: "The Effects of Career Politicians on Political Stability and Government Effectiveness"
+title: "The Impact of Career Politicians on Political Stability and Government Effectiveness"
 author: "Alina Esanu"
-description: Correlation between career politicians and political stability and government
-  effectiveness
+description: "Correlation between career politicians and political stability and government effectiveness"
 output:
-  html_document:
-    df_print: paged
+  distill::distill_article:
+    self_contained: false
+    
 ---
+```{r setup, include = FALSE}
+library(tidyverse)
+library(dplyr)
+```
+
 
 
 
@@ -20,17 +25,67 @@ Political Stability and Absence of Violence/Terrorism measures perceptions of th
 
 
 ```{r}
-library(tidyverse)
 eff_stabil <- read_csv("gov_effectiveness_and_pol_stability.csv")
 glimpse(eff_stabil)
 spec(eff_stabil)
 
 eff_stabil1 <- eff_stabil |>
-  select(`Country Name`,`Series Name`,`2012 [YR2012]`) 
+  rename(country = `Country Name`) |>
+  mutate(estimate_2012 = as.numeric(eff_stabil$`2012 [YR2012]`)) |>
+  drop_na(estimate_2012) |>
+  select(country,`Series Name`, estimate_2012) |>
+  group_by(`Series Name`) |>
+  pivot_wider(names_from = `Series Name`,
+              values_from = estimate_2012) |>
+  rename(effectiveness = `Government Effectiveness: Estimate`, stability = `Political Stability and Absence of Violence/Terrorism: Estimate`)
 eff_stabil1
 ```
 
-I tried using pivot_wider, but it didn't work because the variables are characters instead of factors. I need help figuring out how to turn characters into factors.
 
-pivot_wider(names_from = `Series Name`,
-              values_from = `2012 [YR2012]`)
+              
+```{r}
+prof_pol <- read_csv("profession_parliament.csv")
+prof_pol1 <- prof_pol |>
+  drop_na(CODING) |>
+  rename(country = COUNTRY) |>
+  mutate(prof = if_else(CODING == 1, 1, 0)) |>
+  group_by(country) |>
+  mutate(prop = mean(prof, na.rm = TRUE)) |>
+  select(country, prop) |>
+  distinct(country, prop)
+prof_pol1
+
+```
+
+Gambia (The) vs. Gambia, the: when joining some countries that exist in both but are written differently will be removed
+
+```{r}
+prof_pol_joined <- prof_pol1 |>
+  inner_join(eff_stabil1, by = "country")
+prof_pol_joined
+```
+
+
+```{r}
+prof_pol_joined |>
+  ggplot(mapping = aes(x = prop, y = effectiveness)) +
+  labs(x = "Share of professional politicians",
+       y = "Government effectiveness")+
+  geom_point(alpha = 0.5)
+
+prof_pol_joined |>
+  ggplot(mapping = aes(x = prop, y = stability)) +
+  labs(x = "Share of professional politicians",
+       y = "Political stability")+
+  geom_point(alpha = 0.5)
+  
+```
+
+```{r}
+correlation_effectiveness <- cor(prof_pol_joined$effectiveness, prof_pol_joined$prop)
+correlation_effectiveness
+
+correlation_stability <- cor(prof_pol_joined$stability, prof_pol_joined$prop)
+correlation_stability
+```
+
