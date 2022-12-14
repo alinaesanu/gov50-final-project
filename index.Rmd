@@ -88,6 +88,7 @@ GDP_per_capita <- GDP_per_capita |>
   rename(GDP_per_cap = `2012 [YR2012]`) |> 
   select(country,GDP_per_cap)
 
+## adding GDP per capita to previous data set
 prof_pol_confounder <- prof_pol_joined |>
   inner_join(GDP_per_capita, by = "country")
 prof_pol_confounder
