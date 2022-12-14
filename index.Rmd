@@ -10,26 +10,47 @@ output:
 ```{r setup, include = FALSE}
 library(tidyverse)
 library(dplyr)
+library(broom)
 ```
 
 
 
+## Introduction
 
-## Project thoughts
+In this project, I analyze the relationship between career politicians and two political outcomes, namely political stability and government effectiveness. Citizens have very varied views on career politicians. Mistrust in professional politicians has led to the rise of populism in many states, as political outsiders are often viewed as being less corrupt and less driven by personal interest in retaining power. The motivation behind this paper stems from an interest in examining whether professional politicians should always be seen in a bad light. I hypothesize that there is a positive relationship between the share of career politicians in a country's legislature and political stability, since people who have an extensive political background know and respect the "rules of the game". On the other hand, I hypothesize that legislatures made up of many professional politicians but fewer people with other occupational backgrounds are associated with lower government effectiveness, because politicians with a training in economics, public health, or statistics facilitate the implementation of effective policies in the field in which they specialize.
 
-I am interested in exploring data related to career politicians and two political outcomes, namely political stability and government effectiveness. Career politicians often get a bad reputation, which is why I am curious whether a bigger share of professional politicians produces positive or negative political outcomes. I hypothesize that people who mostly have a political background know and respect the "rules of the game". Therefore, I expect there to be a positive relationship between the number of career politicians and political stability. On the other hand, I hypothesize that legislatures made up of many professional politicians but fewer people with other occupational backgrounds may have a negative impact on government effectiveness. 
+I investigate the relationship between career politicians and the two outcomes of interest by modelling two separate regressions. To make a more meaningful conclusion about the relationship between these variables, I then control for three confounders: GDP per capita, rule of law, and democratic accountability.
 
-Government Effectiveness captures perceptions of the quality of public services, the quality of the civil service and the degree of its independence from political pressures, the quality of policy formulation and implementation, and the credibility of the government's commitment to such policies. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
+## Data
+
+My project is a cross-sectional study of 42 countries at a single point in time, specifically the year 2012. To identify the number of professional politicians in different countries, I used data published in 2012 by the Inter-Parliamentary Union (IPU), which is an international organization of national parliaments. Parliaments used their own approach to categorizing the profession of parliamentarians. Some provided only the last employment before entering parliament; others provided all previous employment up until 2012. 
+              
+```{r}
+prof_pol <- read_csv("profession_parliament.csv")
+prof_pol <- prof_pol |>
+  drop_na(CODING) |>
+  rename(country = COUNTRY) |>
+  mutate(prof = if_else(CODING == 1, 1, 0)) |>
+  group_by(country) |>
+  mutate(prop = mean(prof, na.rm = TRUE)) |>
+  select(country, prop) |>
+  distinct(country, prop)
+prof_pol
+```
+
+
+For all other variables in my study, I used data for the year 2012 from the Worldwide Governance and Development Indicators published by the World Bank. 
+
+Dependent variables:
+
+Government Effectiveness captures perceptions of the quality of public services, the quality of the civil service and the degree of its independence from political pressures, the quality of policy formulation and implementation, and the credibility of the government's commitment to such policies. The estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
 
 Political Stability and Absence of Violence/Terrorism measures perceptions of the likelihood of political instability and/or politically-motivated violence, including terrorism. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
 
-
 ```{r}
 eff_stabil <- read_csv("gov_effectiveness_and_pol_stability.csv")
-glimpse(eff_stabil)
-spec(eff_stabil)
 
-eff_stabil1 <- eff_stabil |>
+eff_stabil <- eff_stabil |>
   rename(country = `Country Name`) |>
   mutate(estimate_2012 = as.numeric(eff_stabil$`2012 [YR2012]`)) |>
   drop_na(estimate_2012) |>
@@ -38,54 +59,151 @@ eff_stabil1 <- eff_stabil |>
   pivot_wider(names_from = `Series Name`,
               values_from = estimate_2012) |>
   rename(effectiveness = `Government Effectiveness: Estimate`, stability = `Political Stability and Absence of Violence/Terrorism: Estimate`)
-eff_stabil1
+eff_stabil
 ```
 
 
-              
 ```{r}
-prof_pol <- read_csv("profession_parliament.csv")
-prof_pol1 <- prof_pol |>
-  drop_na(CODING) |>
-  rename(country = COUNTRY) |>
-  mutate(prof = if_else(CODING == 1, 1, 0)) |>
-  group_by(country) |>
-  mutate(prop = mean(prof, na.rm = TRUE)) |>
-  select(country, prop) |>
-  distinct(country, prop)
-prof_pol1
-
-```
-
-Gambia (The) vs. Gambia, the: when joining some countries that exist in both but are written differently will be removed
-
-```{r}
-prof_pol_joined <- prof_pol1 |>
-  inner_join(eff_stabil1, by = "country")
+## joining the two datasets
+prof_pol_joined <- prof_pol |>
+  inner_join(eff_stabil, by = "country")
 prof_pol_joined
 ```
 
+Confounders:
+
+Rule of law captures perceptions of the extent to which agents have confidence in and abide by the rules of society, and in particular the quality of contract enforcement, property rights, the police, and the courts, as well as the likelihood of crime and violence. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
+
+Democratic accountability captures perceptions of the extent to which a country's citizens are able to participate in selecting their government, as well as freedom of expression, freedom of association, and a free media. The estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
+
+GDP per capita is gross domestic product divided by midyear population for the year 2012 and it is reported in US dollars.
 
 ```{r}
-prof_pol_joined |>
-  ggplot(mapping = aes(x = prop, y = effectiveness)) +
-  labs(x = "Share of professional politicians",
-       y = "Government effectiveness")+
-  geom_point(alpha = 0.5)
+GDP_per_capita <- read_csv("GDP/GDP_per_capita.csv")
 
-prof_pol_joined |>
-  ggplot(mapping = aes(x = prop, y = stability)) +
-  labs(x = "Share of professional politicians",
-       y = "Political stability")+
-  geom_point(alpha = 0.5)
+
+GDP_per_capita <- GDP_per_capita |>
+  rename(country = `Country Name`) |>
+  mutate(country=gsub("Czechia", "Czech Republic", country))|>
+  rename(GDP_per_cap = `2012 [YR2012]`) |> 
+  select(country,GDP_per_cap)
+
+prof_pol_confounder <- prof_pol_joined |>
+  inner_join(GDP_per_capita, by = "country")
+prof_pol_confounder
+
+governance_confounders <- read_csv("Governance Confounders.csv")
+
+governance_confounders <- governance_confounders |>
+  rename(country = `Country Name`) |>
+  rename(data_2012 = `2012 [YR2012]`) |>
+  drop_na(data_2012) |>
+  select(country,`Series Name`, data_2012) |>
+  group_by(`Series Name`) |>
+  pivot_wider(names_from = `Series Name`, values_from = data_2012)|>
+  rename(rule_of_law = `Rule of Law: Estimate`, democratic_accountability = `Voice and Accountability: Estimate`)
+governance_confounders 
+
+## final data set
+prof_pol_allconfounders <- prof_pol_confounder |>
+  inner_join(governance_confounders, by = "country")
+prof_pol_allconfounders
   
 ```
 
-```{r}
-correlation_effectiveness <- cor(prof_pol_joined$effectiveness, prof_pol_joined$prop)
-correlation_effectiveness
+## Plots summarizing my two dependent variables 
 
-correlation_stability <- cor(prof_pol_joined$stability, prof_pol_joined$prop)
-correlation_stability
+```{r}
+effectiveness_plot <- ggplot(data = prof_pol_allconfounders, mapping = aes(x = country, y = effectiveness)) +
+  labs(x = "Countries",
+       y = "Government effectiveness",
+       title = "Government effectiveness around the world")+
+  geom_bar(aes(fill = country, color = country), stat = "identity")
+effectiveness_plot
+
+stability_plot <- ggplot(data = prof_pol_allconfounders, mapping = aes(x = country,y = stability, fill = country, color = country)) +
+   labs(x = "Countries",
+       y = "Political stability",
+       title = "Political stability around the world")+
+geom_point()
+stability_plot
 ```
 
+
+## Results
+
+```{r}
+## scatter plots of the outcomes and the main independent variable
+prof_pol_joined |>
+  ggplot(mapping = aes(x = prop, y = effectiveness)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Share of professional politicians",
+       y = "Government effectiveness")+
+  geom_smooth(method = "lm", se = FALSE)
+
+prof_pol_joined |>
+  ggplot(mapping = aes(x = prop, y = stability)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Share of professional politicians",
+       y = "Political stability")+
+  geom_smooth(method = "lm", se = FALSE)
+  
+```
+
+
+
+```{r}
+## simple linear regression between share of career politicians and the two outcomes of interest
+
+model1 <- lm (effectiveness ~ prop, data = prof_pol_joined)
+tidy(model1) |>
+  knitr::kable(digits = 3)
+
+model2 <- lm (stability ~ prop, data = prof_pol_joined)
+tidy(model2) |>
+  knitr::kable(digits = 3)
+
+```
+
+
+
+
+```{r}
+## multiple regression
+
+model3 <- lm (effectiveness ~ prop + GDP_per_cap + rule_of_law + democratic_accountability, data = prof_pol_allconfounders)
+tidy(model3)
+
+modelsummary::modelsummary(list(model1, model3),
+                           statistic = c("s.e. = {std.error}",
+                                         "p = {p.value}"),
+                           gof_map = c("nobs", "r.squared", "adj.r.squared"))
+
+model4 <- lm(stability ~ prop + GDP_per_cap + rule_of_law + democratic_accountability, data = prof_pol_allconfounders)
+tidy(model4)
+
+modelsummary::modelsummary(list(model2, model4),
+                           statistic = c("s.e. = {std.error}",
+                                         "p = {p.value}"),
+                           gof_map = c("nobs", "r.squared", "adj.r.squared"))
+```
+
+## Interpretation of results
+
+Analysis of first multiple regression:
+
+The estimated coefficient on prop is around -0.267, which means that for a one-unit increase in the share of professional politicians, there is an associated decrease in government effectiveness by 26.7 percentage points, holding GDP per capita, rule of law, and democratic accountability constant. This matches my hypothesis that having more professional politicians is associated with a reduction in government effectiveness. However, this regression coefficient is not statistically significant, as it has a p-value of 0.284. Consequently, when alpha is 0.05, I cannot reject the null hypothesis that the share of professional politicians has no effect on government effectiveness, and fail to establish a causal relationship between share of professional politicians and government effectiveness.
+
+The simple linear regression with government effectiveness as the outcome and just the share of professional politicians as the predictor shows a stronger effect between these variables. The regression coefficient on prop is -0.816. Thus, for every one point increase in share of career politicians, government effectiveness decreases on average by 81.6 percentage points. However, this relationship is also statistically insignificant, as the prop variable has a p-value of 0.194, which is higher than the alpha level that I chose in advance (0.05).
+
+Analysis of second multiple regression:
+
+The estimated coefficient on stability is around 0.245, which means that a one-unit increase in the share of professional politicians is associated with an increase in political stability by 24.5 percentage points, after controlling for GDP per capita, rule of law, and democratic accountability. This supports my hypothesis that having more professional politicians is beneficial for political stability. However, this regression coefficient is not statistically significant, as it has a p-value of 0.57. Therefore, at an alpha level of 0.05, the null hypothesis that the share of professional politicians has no effect on political stability is still valid, which means that any observed differences in political stability could be due to random chance. I cannot make any causal claims regarding the effect of career politicians on political stability because of the statistical insignificance of the coefficient on stability as well as other factors that I will describe in the conclusion.
+
+The simple linear regression with political stability as the outcome and just the share of professional politicians as the predictor show the opposite relationship between these variables. The regression coefficient on prop is −0.453. This means that for every one point increase in share of career politicians, it could be predicted that political stability decreases 45.3 percentage points. The results of the basic regression contradict my initial hypothesis that professional politicians are likely to maintain political stability. However, after including several confounders, the multiple regression supports my hypothesis. At the same time, neither regression coefficients are statistically significant. The prop variable has a p-value of 0.489, which is higher than the alpha level that I set in my study.
+
+## Conclusion
+
+From a causal point of view, multiple regressions are more robust than basic regressions because they allow us to establish a ceteris paribus relationship between independent and dependent variables. The multiple regressions that I obtained showed me the relationship between the share of professional politicians, on the one hand, and government effectiveness and political stability, on the other, while holding other variables constant. I chose GDP per capita, rule of law, and democratic accountability as confounders, because they influence the independent variable and dependent variables in my study. Therefore, to increase the certainty that the associated changes in government effectiveness and political stability are really due to a change in share of professional politicians, I included them in my multiple regression. The results of the multiple regressions matched both of my hypotheses that there is a positive relationship between share of professional politicians and political stability, but a negative relationship between the former and government effectiveness. 
+
+However, my multiple regressions fall short of establishing any causal effects. Apart from the fact that the coefficients that I obtained are not statistically significant, I was unable to study variation in the two dependent variables over time. The data set on share of professional politicians that I found only had data for the year 2012. Thus, this study could be significantly improved if there were data on the number of career politicians in national legislatures over a longer of period of time. A longitudinal research design that tracks the impact of professional politicians on political stability and government effectiveness over time would be more reliable in identifying causal effects. To further improve this study, future researchers could include more confounders, such as region and pervasiveness of corruption, among others. Only observational studies are suitable for this type of research question, as experimental studies are arguably unfeasible. Ideally, we would be able to have a controlled experiment with perfect randomization, where we can show that there are no omitted variables impacting our causal relationship. However, assigning countries into a treatment group with a high share of professional politicians and other countries into a control group with low share of professional politicians would not only pose conceptual difficulties (such as exactly how many professional politicians should be in the treatment and control group) but also practical barriers, as researchers cannot do this kind of large-scale experiments on national governments. Moreover, in my analysis I assumed that there is a linear relationship between the share of professional politicians and the two outcomes of interest. Since it might be the case that having some professional politicians produces a certain effect on government effectiveness and political stability but then may have reverse effects as the number of professional politicians exceeds a certain range, future studies could opt for non-linear regression models. 
