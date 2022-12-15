@@ -1,0 +1,35 @@
+---
+title: "The Effects of Career Politicians on Political Stability and Government Effectiveness"
+author: "Alina Esanu"
+description: "Correlation between career politicians and political stability and government effectiveness"
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+
+## Project thoughts
+
+I am interested in exploring data related to career politicians and two political outcomes, namely political stability and government effectiveness. Career politicians often get a bad reputation, which is why I am curious whether a bigger share of professional politicians produces positive or negative political outcomes. I hypothesize that people who mostly have a political background know and respect the "rules of the game". Therefore, I expect there to be a positive relationship between the number of career politicians and political stability. On the other hand, I hypothesize that legislatures made up of many professional politicians but fewer people with other occupational backgrounds may have a negative impact on government effectiveness. 
+
+Government Effectiveness captures perceptions of the quality of public services, the quality of the civil service and the degree of its independence from political pressures, the quality of policy formulation and implementation, and the credibility of the government's commitment to such policies. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
+
+Political Stability and Absence of Violence/Terrorism measures perceptions of the likelihood of political instability and/or politically-motivated violence, including terrorism. Estimate gives the country's score on the aggregate indicator, in units of a standard normal distribution, i.e. ranging from approximately -2.5 to 2.5.
+
+```{r}
+library(tidyverse)
+eff_stabil <- read_csv("gov_effectiveness_and_pol_stability.csv")
+glimpse(eff_stabil)
+spec(eff_stabil)
+
+eff_stabil1 <- eff_stabil |>
+  select(`Country Name`,`Series Name`,`2012 [YR2012]`) 
+eff_stabil1
+```
+
+I tried using pivot_wider, but it didn't work because the variables are characters instead of factors. I need help figuring out how to turn characters into factors.
+
+pivot_wider(names_from = `Series Name`,
+              values_from = `2012 [YR2012]`)
+              

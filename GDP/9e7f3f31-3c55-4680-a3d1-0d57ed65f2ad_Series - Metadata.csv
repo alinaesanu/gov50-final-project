@@ -1,0 +1,50 @@
+Series Name,Series Code,Country Name,Country Code,2012 [YR2012]
+GDP per capita (current US$),NY.GDP.PCAP.CD,Afghanistan,AFG,638.845851607289
+GDP per capita (current US$),NY.GDP.PCAP.CD,Albania,ALB,4247.63004748194
+GDP per capita (current US$),NY.GDP.PCAP.CD,Argentina,ARG,13082.664325572
+GDP per capita (current US$),NY.GDP.PCAP.CD,Australia,AUS,68027.8417067378
+GDP per capita (current US$),NY.GDP.PCAP.CD,Bangladesh,BGD,883.117129615718
+GDP per capita (current US$),NY.GDP.PCAP.CD,Belarus,BLR,6953.13251493684
+GDP per capita (current US$),NY.GDP.PCAP.CD,Benin,BEN,1145.14010479477
+GDP per capita (current US$),NY.GDP.PCAP.CD,Bhutan,BTN,2538.94951919964
+GDP per capita (current US$),NY.GDP.PCAP.CD,Bosnia and Herzegovina,BIH,4777.06691952937
+GDP per capita (current US$),NY.GDP.PCAP.CD,Bulgaria,BGR,7432.47876568071
+GDP per capita (current US$),NY.GDP.PCAP.CD,Burundi,BDI,252.362469586451
+GDP per capita (current US$),NY.GDP.PCAP.CD,Canada,CAN,52669.0899632316
+GDP per capita (current US$),NY.GDP.PCAP.CD,Colombia,COL,8050.2553716705
+GDP per capita (current US$),NY.GDP.PCAP.CD,Czechia,CZE,19870.8012123403
+GDP per capita (current US$),NY.GDP.PCAP.CD,Djibouti,DJI,1559.24065068226
+GDP per capita (current US$),NY.GDP.PCAP.CD,Finland,FIN,47708.0612784469
+GDP per capita (current US$),NY.GDP.PCAP.CD,France,FRA,40872.3624615688
+GDP per capita (current US$),NY.GDP.PCAP.CD,India,IND,1443.88243476138
+GDP per capita (current US$),NY.GDP.PCAP.CD,Italy,ITA,35051.5212697703
+GDP per capita (current US$),NY.GDP.PCAP.CD,Jamaica,JAM,5209.85926362567
+GDP per capita (current US$),NY.GDP.PCAP.CD,Lebanon,LBN,7948.68544895115
+GDP per capita (current US$),NY.GDP.PCAP.CD,Lesotho,LSO,1229.63623247423
+GDP per capita (current US$),NY.GDP.PCAP.CD,Luxembourg,LUX,112584.676270958
+GDP per capita (current US$),NY.GDP.PCAP.CD,Madagascar,MDG,518.152812673554
+GDP per capita (current US$),NY.GDP.PCAP.CD,Malaysia,MYS,10817.4317100783
+GDP per capita (current US$),NY.GDP.PCAP.CD,Maldives,MDV,7265.72339947372
+GDP per capita (current US$),NY.GDP.PCAP.CD,Malta,MLT,22527.6367563271
+GDP per capita (current US$),NY.GDP.PCAP.CD,Mauritania,MRT,1815.21893947923
+GDP per capita (current US$),NY.GDP.PCAP.CD,Namibia,NAM,5942.29273974027
+GDP per capita (current US$),NY.GDP.PCAP.CD,Nauru,NRU,9562.66786551324
+GDP per capita (current US$),NY.GDP.PCAP.CD,New Zealand,NZL,39973.3807587223
+GDP per capita (current US$),NY.GDP.PCAP.CD,Nicaragua,NIC,1760.46030828841
+GDP per capita (current US$),NY.GDP.PCAP.CD,Philippines,PHL,2694.30510934442
+GDP per capita (current US$),NY.GDP.PCAP.CD,Romania,ROU,8507.10477456436
+GDP per capita (current US$),NY.GDP.PCAP.CD,Russian Federation,RUS,15420.875
+GDP per capita (current US$),NY.GDP.PCAP.CD,Rwanda,RWA,725.20495213212
+GDP per capita (current US$),NY.GDP.PCAP.CD,Senegal,SEN,1317.77980180538
+GDP per capita (current US$),NY.GDP.PCAP.CD,Slovenia,SVN,22641.805122503
+GDP per capita (current US$),NY.GDP.PCAP.CD,Trinidad and Tobago,TTO,19171.2108164078
+GDP per capita (current US$),NY.GDP.PCAP.CD,Ukraine,UKR,4004.80444335938
+GDP per capita (current US$),NY.GDP.PCAP.CD,Uruguay,URY,15171.5801734227
+GDP per capita (current US$),NY.GDP.PCAP.CD,Poland,POL,13097.2708482174
+,,,,
+,,,,
+,,,,
+Data from database: World Development Indicators,,,,
+Last Updated: 09/16/2022,,,,
+Code,License Type,Indicator Name,Long definition,Source,Topic,Periodicity,Aggregation method,Statistical concept and methodology,License URL
+NY.GDP.PCAP.CD,CC BY-4.0,GDP per capita (current US$),GDP per capita is gross domestic product divided by midyear population. GDP is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources. Data are in current U.S. dollars.,"World Bank national accounts data, and OECD National Accounts data files.",Economic Policy & Debt: National accounts: US$ at current prices: Aggregate indicators,Annual,Weighted Average,"For more information, see the metadata for current U.S. dollar GDP (NY.GDP.MKTP.CD) and total population (SP.POP.TOTL).",https://datacatalog.worldbank.org/public-licenses#cc-by

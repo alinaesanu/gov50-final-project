@@ -14,7 +14,6 @@ library(broom)
 ```
 
 
-
 ## Introduction
 
 In this project, I analyze the relationship between career politicians and two political outcomes, namely political stability and government effectiveness. Citizens have very varied views on career politicians. Mistrust in professional politicians has led to the rise of populism in many states, as political outsiders are often viewed as being less corrupt and less driven by personal interest in retaining power. The motivation behind this paper stems from an interest in examining whether professional politicians should always be seen in a bad light. I hypothesize that there is a positive relationship between the share of career politicians in a country's legislature and political stability, since people who have an extensive political background know and respect the "rules of the game". On the other hand, I hypothesize that legislatures made up of many professional politicians but fewer people with other occupational backgrounds are associated with lower government effectiveness, because politicians with a training in economics, public health, or statistics facilitate the implementation of effective policies in the field in which they specialize.
